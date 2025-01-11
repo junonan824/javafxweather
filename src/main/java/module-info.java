@@ -28,7 +28,7 @@
 /**
  * This module provided application launcher.
  */
-module ru.akman.launcher {
+module ru.akman {
 
   // picocli
   requires info.picocli;
@@ -49,5 +49,12 @@ module ru.akman.launcher {
   exports ru.akman.gui to javafx.graphics;
 
   opens ru.akman.gui to javafx.fxml;
+
+  requires java.net.http;
+  requires com.fasterxml.jackson.databind;
+
+  exports ru.akman.model;
+  exports ru.akman.service;
+  exports ru.akman.launcher;
 
 }

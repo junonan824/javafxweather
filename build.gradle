@@ -80,7 +80,7 @@ ext {
   }
 
   // Java
-  javaVersion = JavaVersion.VERSION_21
+  javaVersion = JavaVersion.VERSION_17
 
   // Encoding
   defaultEncoding = 'UTF-8'
@@ -93,7 +93,7 @@ ext {
   jacocoVersion = '0.8.12'
 
   // Dependencies
-  javafxVersion = '21'
+  javafxVersion = '17.0.12'
   picocliVersion = '4.7.6'
   slf4jVersion = '2.0.15'
   logbackVersion = '1.5.11'
@@ -138,7 +138,7 @@ ext {
 
   // Launcher
   applicationLauncherName = 'launcher'
-  applicationModuleName = 'ru.akman.launcher'
+  applicationModuleName = 'ru.akman'
   applicationClassName = 'ru.akman.launcher.Launcher'
   applicationJvmArgs = [
     '-Xms256m',
@@ -151,7 +151,7 @@ ext {
 
   // Platform
   os = org.gradle.internal.os.OperatingSystem.current()
-  platformModifier = os.isWindows() ? 'win' : (os.isLinux() ? 'linux' : 'mac')
+  platformModifier = os.isMacOsX() ? 'mac-aarch64' : (os.isWindows() ? 'win' : 'linux')
   platformFamily = os.isWindows() ? 'windows' : (os.isLinux() ? 'linux' : 'mac')
 
   switch (platformFamily) {
@@ -228,11 +228,11 @@ dependencies {
   )
   implementation(
     // JavaFX
-    "org.openjfx:javafx-base:${javafxVersion}:${platformModifier}",
-    "org.openjfx:javafx-controls:${javafxVersion}:${platformModifier}",
-    "org.openjfx:javafx-graphics:${javafxVersion}:${platformModifier}",
-    "org.openjfx:javafx-fxml:${javafxVersion}:${platformModifier}",
-    "org.openjfx:javafx-swing:${javafxVersion}:${platformModifier}",
+    "org.openjfx:javafx-base:${javafxVersion}:mac-aarch64",
+    "org.openjfx:javafx-controls:${javafxVersion}:mac-aarch64",
+    "org.openjfx:javafx-graphics:${javafxVersion}:mac-aarch64",
+    "org.openjfx:javafx-fxml:${javafxVersion}:mac-aarch64",
+    "org.openjfx:javafx-swing:${javafxVersion}:mac-aarch64",
     //"org.openjfx:javafx-web:${javafxVersion}:${platformModifier}",
     //"org.openjfx:javafx-media:${javafxVersion}:${platformModifier}",
     // Picocli
@@ -264,6 +264,7 @@ dependencies {
   ) {
     transitive = false
   }
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 }
 
 java {

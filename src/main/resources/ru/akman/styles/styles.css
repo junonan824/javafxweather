@@ -1,0 +1,22 @@
+.background-day {
+    -fx-background-color: linear-gradient(to bottom, #87CEEB, #E0FFFF);
+}
+
+.background-night {
+    -fx-background-color: linear-gradient(to bottom, #191970, #483D8B);
+}
+
+.weather-display {
+    -fx-padding: 20;
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+    -fx-background-radius: 10;
+}
+
+.temperature {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+}
+
+.condition {
+    -fx-font-size: 18px;
+} 

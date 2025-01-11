@@ -29,32 +29,98 @@
 package ru.akman.gui;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import ru.akman.model.WeatherData;
+import ru.akman.service.WeatherService;
 
-/**
- * Primary controller.
- */
 public class PrimaryController {
+    @FXML private TextField locationInput;
+    @FXML private Label temperatureLabel;
+    @FXML private Label humidityLabel;
+    @FXML private Label windSpeedLabel;
+    @FXML private Label conditionLabel;
+    @FXML private ImageView weatherIcon;
+    @FXML private ToggleButton unitToggle;
+    @FXML private ListView<String> searchHistory;
+    @FXML private AnchorPane backgroundPane;
 
-  /**
-   * Secodary FXML.
-   */
-  private static final String SECONDARY_FXML = "secondary.fxml";
+    private WeatherService weatherService;
+    private boolean isCelsius = true;
 
-  /**
-   * Default constructor.
-   */
-  public PrimaryController() {
-    // nop
-  }
+    @FXML
+    public void initialize() {
+        try {
+            weatherService = new WeatherService();
+            setupEventHandlers();
+            updateBackgroundForTimeOfDay();
+        } catch (Exception e) {
+            showError("Failed to initialize weather service");
+        }
+    }
 
-  @FXML
-  private void switchToSecondary() {
-    // TODO: Private method 'switchToSecondary()' is never called.
-    // [SpotBugs] Perfomance.
-    // This private method is never called. Although it is possible that
-    // the method will be invoked through reflection, it is more likely that
-    // the method is never used, and should be removed.
-    LauncherHelper.setRoot(SECONDARY_FXML);
-  }
+    private void setupEventHandlers() {
+        locationInput.setOnAction(e -> fetchWeather());
+        unitToggle.setOnAction(e -> {
+            isCelsius = !isCelsius;  // Toggle between Celsius and Fahrenheit
+            updateTemperatureDisplay();
+        });
+    }
 
+    @FXML
+    private void fetchWeather() {
+        String location = locationInput.getText();
+        if (location == null || location.trim().isEmpty()) {
+            showError("Please enter a location");
+            return;
+        }
+
+        try {
+            WeatherData weather = weatherService.getWeatherForCity(location);
+            updateDisplay(weather);
+            addToHistory(location);
+        } catch (Exception e) {
+            showError("Failed to fetch weather data: " + e.getMessage());
+        }
+    }
+
+    private void updateTemperatureDisplay() {
+        if (weatherService == null) return;
+        
+        try {
+            String location = locationInput.getText();
+            if (location != null && !location.trim().isEmpty()) {
+                WeatherData weather = weatherService.getWeatherForCity(location);
+                updateDisplay(weather);
+            }
+        } catch (Exception e) {
+            showError("Failed to update temperature display: " + e.getMessage());
+        }
+    }
+
+    private void updateDisplay(WeatherData weather) {
+        double temp = isCelsius ? weather.getTemperature() : weather.getTemperatureInFahrenheit();
+        temperatureLabel.setText(String.format("%.1f°%s", temp, isCelsius ? "C" : "F"));
+        humidityLabel.setText(String.format("Humidity: %.1f%%", weather.getHumidity()));
+        windSpeedLabel.setText(String.format("Wind: %.1f km/h", weather.getWindSpeed()));
+        conditionLabel.setText(weather.getCondition());
+        // Update weather icon - implementation needed
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message);
+        alert.showAndWait();
+    }
+
+    private void addToHistory(String location) {
+        searchHistory.getItems().add(0, 
+            String.format("%s - %s", location, java.time.LocalTime.now()));
+    }
+
+    private void updateBackgroundForTimeOfDay() {
+        int hour = java.time.LocalTime.now().getHour();
+        String timeOfDay = (hour >= 6 && hour < 18) ? "day" : "night";
+        backgroundPane.getStyleClass().setAll("background-" + timeOfDay);
+    }
 }
